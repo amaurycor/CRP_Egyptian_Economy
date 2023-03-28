@@ -77,7 +77,7 @@ class NowcastingEco:
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
         self.df = self.df
-        
+
         return self.df
 
     #############
@@ -92,7 +92,7 @@ class NowcastingEco:
             self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
         elif theme == 'TRADE':
-            theme_filter = ['TRADE','MARKET']
+            theme_filter = ['TRADE','MARKET','ECON']
             #self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
             self.df = self.df[self.df.apply(lambda x: any([item in theme_filter for item in x['cleaned_themes']]) and any([item in theme_filter for item in x['cleaned_url']]), axis=1)]
             
@@ -106,6 +106,8 @@ class NowcastingEco:
         else:
             print('ERROR Invalid input')
             self.set_country_filter()
+
+        self.df = self.df    
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
     
