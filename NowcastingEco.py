@@ -50,7 +50,7 @@ class NowcastingEco:
         s_ = str(s_)
         modified_str = [elem.split('#')[1] for elem in s_.split(';')]
         final_str = [elem.split(', ')[-1] for elem in modified_str]
-        filtered_words = set(final_str).intersection(self.country_filter)
+        filtered_words = set(final_str).intersection(self.country_filter) # on garde le set ?
         ratio = len(filtered_words) / len(final_str)
         return filtered_words if ratio >= 0.3 else 0
         
@@ -83,7 +83,10 @@ class NowcastingEco:
 
         elif theme == 'TRADE':
             filter = ['TRADE','MARKET']
-            self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            #self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+           
+            mask = (self.df['cleaned_themes'].str.contains('|'.join(filter))) & (self.df['cleaned_url'].str.contains('|'.join(filter)))
+            self.df = self.df[mask]
 
         elif theme == 'EMPLOYMENT':
             filter = ['EMPLOYMENT','UNEMPLOYMENT']
