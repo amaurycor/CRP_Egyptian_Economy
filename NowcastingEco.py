@@ -83,11 +83,11 @@ class NowcastingEco:
 
         elif theme == 'TRADE':
             filter = ['TRADE','MARKET']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
         
         else:
             print('ERROR Invalid input')
