@@ -51,7 +51,7 @@ class NowcastingEco:
         s_ = str(s_)
         modified_str = [elem.split('#')[1] for elem in s_.split(';')]
         final_str = [elem.split(', ')[-1] for elem in modified_str]
-        filtered_words = set(final_str).intersection(self.country_filter) # on garde le set ?
+        filtered_words = final_str.intersection(self.country_filter) # on garde le set ?
         ratio = len(filtered_words) / len(final_str)
         return filtered_words if ratio >= 0.3 else 0
         
