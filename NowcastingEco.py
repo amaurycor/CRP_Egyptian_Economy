@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from urllib.parse import urlparse
 
-class NowcastingEco():
+class NowcastingEco:
 
     def __init__(self,df):
         self.country_filter = []
