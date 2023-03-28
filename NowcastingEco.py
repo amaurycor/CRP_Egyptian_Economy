@@ -135,11 +135,11 @@ class NowcastingEco:
         if gdp:
             ax2 = ax.twinx()
             ax.plot(df_gdp.date,df_gdp.gdp_per_capita)
-            ax2.ylabel('GDP per capita')
+            ax2.set_ylabel('GDP per capita')
             
         # set axis labels and title
-        ax.xlabel('date')
-        ax.ylabel('Average Tone')
+        ax.set_xlabel('date')
+        ax.set_ylabel('Average Tone')
         ax.legend()
         ax.set_title('Comparison between the evolution of tone and GDP per capita throughout the years ')
 
@@ -149,10 +149,10 @@ class NowcastingEco:
         if gdp:
             bx2 = ax.twinx()
             bx2.plot(df_gdp.date,df_gdp.gdp_per_capita)
-            bx2.ylabel('GDP per capita')
+            bx2.set_ylabel('GDP per capita')
 
-        bx.xlabel('date')
-        bx.ylabel('Percentage of positive tone articles')
+        bx.set_xlabel('date')
+        bx.set_ylabel('Percentage of positive tone articles')
         bx.legend()
         bx.set_title('Comparison between the evolution of the percentage of positive tone articles and GDP per capita throughout the years ')
 
@@ -160,8 +160,8 @@ class NowcastingEco:
         for name, group in boxplot_df:
             cx.boxplot(group['mean_tone'], positions=[name])
         cx.set_xticklabels(boxplot_df.groups.keys())
-        cx.xlabel('date')
-        cx.ylabel('Average tone')
+        cx.set_xlabel('date')
+        cx.set_ylabel('Average tone')
         cx.set_title('Box plots of tone averages')
 
         plt.show()
