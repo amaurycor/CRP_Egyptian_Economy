@@ -66,14 +66,16 @@ class NowcastingEco:
         self.df['cleaned_url'] = self.df['documentidentifier'].apply(lambda x: self.title_url(x))
 
         self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
-        
+
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
         return self.df
 
 
     ###   
-    def _theme_filtering(self, theme):
+    def _theme_filtering(self):
+
+        theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
 
         if theme == 'CONSUMPTION':
             filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
@@ -88,14 +90,14 @@ class NowcastingEco:
             self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['url_title'].apply(lambda x: any(keyword in x for keyword in filter))]
         
         else:
-            print('Theme is not recognised, please select between: "CONSUMPTION", "TRADE", "EMPLOYMENT".')
+            print('ERROR')
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
     
 
-    def tone_analysis(self,theme,gdp=False): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
+    def tone_analysis(self,gdp=False): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
 
-        self.df = self._theme_filtering(self.df,theme)
+        self.df = self._theme_filtering()
 
         if gdp:
             gdp = {'date':[2015,2016,2017,2018,2019,2020,2021],'gdp_per_capita':[3370.382447,3331.612461,2315.896627,2407.086543,2869.576588,3398.801432,3698.834981]}
