@@ -59,16 +59,22 @@ class NowcastingEco:
         ratio = len(filtered_words) / len(final_str)
         return filtered_words if ratio >= 0.3 else 0
         
+    def convert_into_list(self,string):
+        list_ = list(string.split(","))
+        list_ = [eval(i) for i in list_] # to get a float list
+        return list_
 
     def clean_data(self):
 
         self.set_country_filter()
 
-        self.df.date = self.df.date.apply(lambda x: datetime.strptime(str(int(x)), '%Y%m%d%H%M%S'))
-
         self.df['cleaned_locations'] = self.df['enhancedlocations'].apply(lambda x: self._country_filtering(x))
 
         self.df = self.df[ (self.df['cleaned_locations'] != 0)]
+
+        self.df.date = self.df.date.apply(lambda x: datetime.strptime(str(int(x)), '%Y%m%d%H%M%S'))
+
+        self.df.tone = self.df.tone.apply(lambda x: self.convert_into_list(x))
 
         self.df['cleaned_url'] = self.df['documentidentifier'].apply(lambda x: self.title_url(x))
 
