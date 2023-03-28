@@ -143,40 +143,40 @@ class NowcastingEco:
         
         # First graph
         # plot the data
-        ax1.plot(avg_tone.loc[:2021])
+        ax1.plot(avg_tone.loc[:2021],'r',label='Average tone')
         ax1.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Average tone')
         # plot gdp if wanted
         if gdp:
             ax1_twin = ax1.twinx()
-            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita)
+            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
             ax1_twin.set_ylabel('GDP per capita')
             
         # set axis labels and title
         ax1.set_xlabel('date')
-        ax1.set_ylabel('Average Tone')
+        ax1.set_ylabel('Tone')
         ax1.legend()
-        ax1.set_title('Comparison between the evolution of tone and GDP per capita throughout the years ')
+        ax1.set_title('Comparison between the evolution of the tone average and GDP per capita throughout the years ')
 
         # Second graph
-        ax2.plot(ratio_tone.loc[:2021])
+        ax2.plot(ratio_tone.loc[:2021],'g',label=' % positive articles')
         ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Average %')
         if gdp:
             ax2_twin = ax2.twinx()
-            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita)
+            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
             ax2_twin.set_ylabel('GDP per capita')
 
         ax2.set_xlabel('date')
-        ax2.set_ylabel('Percentage of positive tone articles')
+        ax2.set_ylabel('Percentage of articles')
         ax2.legend()
-        ax2.set_title('Comparison between the evolution of the percentage of positive tone articles and GDP per capita throughout the years ')
+        ax2.set_title('Comparison between the evolution of the percentage of positive toned articles and GDP per capita throughout the years ')
 
         # Third graph - boxplots
         for name, group in boxplot_df:
             ax3.boxplot(group['mean_tone'], positions=[name])
         ax3.set_xticklabels(boxplot_df.groups.keys())
         ax3.set_xlabel('date')
-        ax3.set_ylabel('Average tone')
-        ax3.set_title('Box plots of tone averages')
+        ax3.set_ylabel('Average tones')
+        ax3.set_title('Box plots of the tone averages')
 
         plt.tight_layout()
         plt.show()
