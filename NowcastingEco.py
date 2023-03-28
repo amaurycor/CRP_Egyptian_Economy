@@ -129,7 +129,7 @@ class NowcastingEco:
         # Defining new column related to tone
         self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
         self.df['binary_tone'] = self.df.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
-        boxplot_df = self.df.groupby(self.df.date.dt.year)['mean_tone']
+        boxplot_df = self.df.groupby(self.df.date.dt.year)
 
         # Count the filtered number of articles per year
         nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
