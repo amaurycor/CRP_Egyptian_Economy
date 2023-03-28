@@ -93,7 +93,7 @@ class NowcastingEco:
 
         elif theme == 'TRADE':
             theme_filter = ['TRADE','MARKET'] # don't find these two keywords in the title
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             theme_filter = ['EMPLOYMENT','UNEMPLOYMENT']
