@@ -118,7 +118,7 @@ class NowcastingEco:
         boxplot_df = self.df.groupby(self.df.date.dt.year)
 
         # Count the filtered number of articles per year
-        nb_articles = self.df.groupby(self.df.date.dt.year)['gkgrecordid'].count()
+        nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
         # Average of the tone of articles per year
         avg_tone = self.df.groupby(self.df.date.dt.year)['mean_tone'].mean()
         # Ratio of pos and neg tone of articles per year
