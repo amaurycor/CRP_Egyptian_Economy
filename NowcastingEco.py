@@ -46,19 +46,13 @@ class NowcastingEco:
         merged_list = [item for sublist in desired_string[-2:] for item in sublist if item.isalpha()]
         return (merged_list)
 
-    def _country_filtering(self, s_):
+    def _country_filtering(self,s_): # optimized
         s_ = str(s_)
         modified_str = [elem.split('#')[1] for elem in s_.split(';')]
-        final_str = [elem.split(', ') for elem in modified_str ]
-        merged_list = []
-        for sublist in final_str:
-            merged_list.append(sublist[-1])
-        filtered_words=[elem for elem in merged_list if elem in self.country_filter ]
-        ratio= len(filtered_words)/len(merged_list)
-        if ratio>=0.3:
-           return filtered_words
-        else:
-            return 0
+        final_str = [elem.split(', ')[-1] for elem in modified_str]
+        filtered_words = set(final_str).intersection(self.country_filter)
+        ratio = len(filtered_words) / len(final_str)
+        return filtered_words if ratio >= 0.3 else 0
         
 
     def clean_data(self):
@@ -67,12 +61,12 @@ class NowcastingEco:
 
         self.df['cleaned_locations'] = self.df['enhancedlocations'].apply(lambda x: self._country_filtering(x))
 
+        self.df = self.df[ (self.df['cleaned_locations'] != 0)]
+
         self.df['cleaned_url'] = self.df['documentidentifier'].apply(lambda x: self.title_url(x))
 
         self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
-
-        self.df = self.df[ (self.df['cleaned_locations'] != 0)]
-
+        
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
         return self.df
