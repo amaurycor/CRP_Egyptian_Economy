@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from urllib.parse import urlparse
+from datetime import datetime
 
 class NowcastingEco:
 
@@ -59,6 +60,8 @@ class NowcastingEco:
 
         self.set_country_filter()
 
+        self.df.date = self.df.date.apply(lambda x: datetime.strptime(str(int(x)), '%Y%m%d%H%M%S'))
+
         self.df['cleaned_locations'] = self.df['enhancedlocations'].apply(lambda x: self._country_filtering(x))
 
         self.df = self.df[ (self.df['cleaned_locations'] != 0)]
@@ -112,7 +115,7 @@ class NowcastingEco:
         # Defining new column related to tone
         self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
         self.df['binary_tone'] = self.df.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
-        boxplot_df = self.df.groupby(self.df.date.dt.year)['mean_tone']
+        boxplot_df = self.df.groupby(self.df.date.dt.year)
 
         # Count the filtered number of articles per year
         nb_articles = self.df.groupby(self.df.date.dt.year)['enhancedthemes'].count()
@@ -155,7 +158,7 @@ class NowcastingEco:
 
         # Third graph - boxplots
         for name, group in boxplot_df:
-            cx.boxplot(group['valeurs'], positions=[name])
+            cx.boxplot(group['mean_tone'], positions=[name])
         cx.set_xticklabels(boxplot_df.groups.keys())
         cx.xlabel('date')
         cx.ylabel('Average tone')
