@@ -57,8 +57,8 @@ class NowcastingEco:
         ratio= len(filtered_words)/len(merged_list)
         if ratio>=0.3:
            return filtered_words
-#        else:
-#            return 0
+        else:
+            return 0
         
 
     def clean_data(self):
@@ -71,7 +71,7 @@ class NowcastingEco:
 
         self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
 
-#        self.df = self.df[ (self.df['cleaned_locations'] != 0)]
+        self.df = self.df[ (self.df['cleaned_locations'] != 0)]
 
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
