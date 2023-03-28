@@ -67,7 +67,7 @@ class NowcastingEco:
 
         self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
 
-        self.df.drop(columns=['enhancedlocations', 'documentidentifier'], inplace=True)
+        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
         return self.df
 
@@ -79,15 +79,15 @@ class NowcastingEco:
 
         if theme == 'CONSUMPTION':
             filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'TRADE':
             filter = ['TRADE','MARKET']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
         
         else:
             print('ERROR Invalid input')
