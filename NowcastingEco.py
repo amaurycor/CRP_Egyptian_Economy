@@ -8,6 +8,7 @@ class NowcastingEco:
 
     def __init__(self,df):
         self.country_filter = []
+        self.theme_filter = []
         self.df = df
 
     def set_country_filter(self):
@@ -81,19 +82,19 @@ class NowcastingEco:
         theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
 
         if theme == 'CONSUMPTION':
-            filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
         elif theme == 'TRADE':
-            filter = ['TRADE','MARKET','ECON']
+            theme_filter = ['TRADE','MARKET']
             #self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
            
-            mask = (self.df['cleaned_themes'].str.contains('|'.join(filter))) & (self.df['cleaned_url'].str.contains('|'.join(filter)))
+            mask = (self.df['cleaned_themes'].str.contains('|'.join(theme_filter))) and (self.df['cleaned_url'].str.contains('|'.join(theme_filter)))
             self.df = self.df[mask]
 
         elif theme == 'EMPLOYMENT':
-            filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            theme_filter = ['EMPLOYMENT','UNEMPLOYMENT']
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
         
         else:
             print('ERROR Invalid input')
