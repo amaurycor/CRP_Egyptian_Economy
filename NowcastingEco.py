@@ -79,23 +79,24 @@ class NowcastingEco:
 
         if theme == 'CONSUMPTION':
             filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['url_title'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'TRADE':
             filter = ['TRADE','MARKET']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['url_title'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['url_title'].apply(lambda x: any(keyword in x for keyword in filter))]
+            self.df = self.df[self.df['enhancedthemes'].apply(lambda x: any(keyword in x for keyword in filter))and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
         
         else:
-            print('ERROR')
+            print('ERROR Invalid input')
+            self.set_country_filter()
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
     
 
-    def tone_analysis(self,gdp=False): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
+    def tone_analysis(self,gdp=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
 
         self.df = self._theme_filtering()
 
