@@ -11,6 +11,9 @@ class NowcastingEco:
         self.theme_filter = []
         self.df = df
 
+    #################
+    ### Cleaning part
+    #################
     def set_country_filter(self):
         option = input("Choose a theme filter option (Egypt, UAE, or KSA): ")
         if option == 'Egypt':
@@ -73,10 +76,13 @@ class NowcastingEco:
 
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
 
+        self.df = self.df
+        
         return self.df
 
-
-    ###   
+    #############
+    ### Tone part
+    #############
     def _theme_filtering(self):
 
         theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
