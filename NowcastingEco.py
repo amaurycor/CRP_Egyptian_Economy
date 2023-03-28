@@ -89,19 +89,15 @@ class NowcastingEco:
 
         if theme == 'CONSUMPTION':
             theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
         elif theme == 'TRADE':
-            theme_filter = ['TRADE','MARKET']
-            #self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
-            self.df = self.df[self.df.apply(lambda x: any([item in theme_filter for item in x['cleaned_themes']]) and any([item in theme_filter for item in x['cleaned_url']]), axis=1)]
-            
-            #mask = (self.df['cleaned_themes'].str.contains('|'.join(theme_filter))) and (self.df['cleaned_url'].str.contains('|'.join(theme_filter)))
-            #self.df = self.df[mask]
+            theme_filter = ['TRADE','MARKET'] # don't find these two keywords in the title
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             theme_filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
         
         else:
             print('ERROR Invalid input')
@@ -123,7 +119,7 @@ class NowcastingEco:
         # Defining new column related to tone
         self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
         self.df['binary_tone'] = self.df.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
-        boxplot_df = self.df.groupby(self.df.date.dt.year)
+        boxplot_df = self.df.groupby(self.df.date.dt.year)['mean_tone']
 
         # Count the filtered number of articles per year
         nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
