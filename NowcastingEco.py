@@ -85,23 +85,27 @@ class NowcastingEco:
     #############
     def _theme_filtering(self):
 
+        df = self.df # to make it iterable
+
         theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
 
         if theme == 'CONSUMPTION':
             theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
         elif theme == 'TRADE':
             theme_filter = ['TRADE','MARKET'] # don't find these two keywords in the title
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
             theme_filter = ['EMPLOYMENT','UNEMPLOYMENT']
-            self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
         
         else:
             print('ERROR Invalid input')
             self.set_country_filter()   
+
+        self.df = df
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
     
