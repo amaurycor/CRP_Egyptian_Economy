@@ -85,7 +85,7 @@ class NowcastingEco:
             self.df = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'TRADE':
-            filter = ['TRADE','MARKET']
+            filter = ['TRADE','MARKET','ECON']
             #self.df = self.df[self.df['cleaned_themes','cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter)) and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
            
             mask = (self.df['cleaned_themes'].str.contains('|'.join(filter))) & (self.df['cleaned_url'].str.contains('|'.join(filter)))
