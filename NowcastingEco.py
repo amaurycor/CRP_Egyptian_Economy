@@ -125,45 +125,46 @@ class NowcastingEco:
         ratio_tone = self.df.groupby(self.df.date.dt.year)['binary_tone'].mean()
 
         ### Plotting ###
-        fig , (ax,bx,cx) = plt.subplots(3)
+        fig , (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, figsize=(8, 12))
         
         # First graph
         # plot the data
-        ax.plot(avg_tone.loc[:2021])
-        ax.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Average tone')
+        ax1.plot(avg_tone.loc[:2021])
+        ax1.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Average tone')
         # plot gdp if wanted
         if gdp:
-            ax2 = ax.twinx()
-            ax.plot(df_gdp.date,df_gdp.gdp_per_capita)
-            ax2.set_ylabel('GDP per capita')
+            ax1_twin = ax1.twinx()
+            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita)
+            ax1_twin.set_ylabel('GDP per capita')
             
         # set axis labels and title
-        ax.set_xlabel('date')
-        ax.set_ylabel('Average Tone')
-        ax.legend()
-        ax.set_title('Comparison between the evolution of tone and GDP per capita throughout the years ')
+        ax1.set_xlabel('date')
+        ax1.set_ylabel('Average Tone')
+        ax1.legend()
+        ax1.set_title('Comparison between the evolution of tone and GDP per capita throughout the years ')
 
         # Second graph
-        bx.plot(ratio_tone.loc[:2021])
-        bx.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Average %')
+        ax2.plot(ratio_tone.loc[:2021])
+        ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Average %')
         if gdp:
-            bx2 = ax.twinx()
-            bx2.plot(df_gdp.date,df_gdp.gdp_per_capita)
-            bx2.set_ylabel('GDP per capita')
+            ax2_twin = ax2.twinx()
+            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita)
+            ax2_twin.set_ylabel('GDP per capita')
 
-        bx.set_xlabel('date')
-        bx.set_ylabel('Percentage of positive tone articles')
-        bx.legend()
-        bx.set_title('Comparison between the evolution of the percentage of positive tone articles and GDP per capita throughout the years ')
+        ax2.set_xlabel('date')
+        ax2.set_ylabel('Percentage of positive tone articles')
+        ax2.legend()
+        ax2.set_title('Comparison between the evolution of the percentage of positive tone articles and GDP per capita throughout the years ')
 
         # Third graph - boxplots
         for name, group in boxplot_df:
-            cx.boxplot(group['mean_tone'], positions=[name])
-        cx.set_xticklabels(boxplot_df.groups.keys())
-        cx.set_xlabel('date')
-        cx.set_ylabel('Average tone')
-        cx.set_title('Box plots of tone averages')
+            ax3.boxplot(group['mean_tone'], positions=[name])
+        ax3.set_xticklabels(boxplot_df.groups.keys())
+        ax3.set_xlabel('date')
+        ax3.set_ylabel('Average tone')
+        ax3.set_title('Box plots of tone averages')
 
+        plt.tight_layout()
         plt.show()
 
         print('Number of articles per year for the filtered country and theme: ',nb_articles)
