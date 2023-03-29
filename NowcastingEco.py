@@ -148,7 +148,7 @@ class NowcastingEco:
         # plot gdp if wanted
         if gdp:
             ax1_twin = ax1.twinx()
-            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
+            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,'b',label='GDP')
             ax1_twin.set_ylabel('Dollars')
             
         # set axis labels and title
@@ -162,7 +162,7 @@ class NowcastingEco:
         ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Mean %')
         if gdp:
             ax2_twin = ax2.twinx()
-            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
+            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,'b',label='GDP')
             ax2_twin.set_ylabel('Dollars')
 
         ax2.set_xlabel('date')
