@@ -114,7 +114,7 @@ class NowcastingEco:
         self.df = df
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
-    
+
 
     def tone_analysis(self,gdp=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
 
@@ -143,13 +143,13 @@ class NowcastingEco:
         
         # First graph
         # plot the data
-        ax1.plot(avg_tone.loc[:2021],'r',label='Average tone')
-        ax1.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Average tone')
+        ax1.plot(avg_tone.loc[:2021],'r',label='Average tones')
+        ax1.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Mean of average tones')
         # plot gdp if wanted
         if gdp:
             ax1_twin = ax1.twinx()
             ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
-            ax1_twin.set_ylabel('GDP per capita')
+            ax1_twin.set_ylabel('Dollars')
             
         # set axis labels and title
         ax1.set_xlabel('date')
@@ -159,11 +159,11 @@ class NowcastingEco:
 
         # Second graph
         ax2.plot(ratio_tone.loc[:2021],'g',label=' % positive articles')
-        ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Average %')
+        ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Mean %')
         if gdp:
             ax2_twin = ax2.twinx()
             ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,label='GDP')
-            ax2_twin.set_ylabel('GDP per capita')
+            ax2_twin.set_ylabel('Dollars')
 
         ax2.set_xlabel('date')
         ax2.set_ylabel('Percentage of articles')
@@ -175,12 +175,10 @@ class NowcastingEco:
             ax3.boxplot(group['mean_tone'], positions=[name])
         ax3.set_xticklabels(boxplot_df.groups.keys())
         ax3.set_xlabel('date')
-        ax3.set_ylabel('Average tones')
+        ax3.set_ylabel('Tone')
         ax3.set_title('Box plots of the tone averages')
 
         plt.tight_layout()
         plt.show()
 
         print('Number of articles per year for the filtered country and theme: ',nb_articles)
-
-        return self.df
