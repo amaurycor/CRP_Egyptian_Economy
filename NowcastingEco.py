@@ -155,7 +155,7 @@ class NowcastingEco:
         ax1.set_xlabel('date')
         ax1.set_ylabel('Tone')
         ax1.legend()
-        ax1.set_title('Comparison between the evolution of the tone average and GDP per capita throughout the years ')
+        ax1.set_title('Comparison between the evolution of the average tone and GDP per capita throughout the years ')
 
         # Second graph
         ax2.plot(ratio_tone.loc[:2021],'g',label=' % positive articles')
