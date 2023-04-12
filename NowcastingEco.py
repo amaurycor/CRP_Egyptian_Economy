@@ -10,6 +10,7 @@ class NowcastingEco:
         self.country_filter = []
         self.theme_filter = []
         self.df = df
+        self.country = 0
 
     #################
     ### Cleaning part
@@ -17,10 +18,13 @@ class NowcastingEco:
     def set_country_filter(self):
         option = input("Choose a theme filter option (Egypt, UAE, or KSA): ")
         if option == 'Egypt':
+            self.country = 'Egypt'
             self.country_filter = ['Egypt', 'Egyptian', 'Cairo', 'Alexandria', 'Egyptians']
         elif option == 'UAE':
+            self.country = 'UAE'
             self.country_filter = ['United Arab Emirates', 'Dubai']
         elif option == 'KSA':
+            self.country = 'KSA'
             self.country_filter = ['Saudi Arabia', 'Riyadh']
         else:
             print("Invalid option. Please choose Egypt, UAE, or KSA.")
@@ -115,16 +119,43 @@ class NowcastingEco:
 
         return self.df # filtered dataframe containing only data related to the corresponding theme
 
+    def read_country_data(self):
+        if 'EGYPT':
+            path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg _Data_Egypt.xlsx'
+        elif 'KSA':
+            path = 'x'
+        elif 'UAE':
+            path = 'x'
+        else:
+            print('COUNTRY ERROR')
 
-    def tone_analysis(self,gdp=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
+        option = input("Choose your indicator: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests - pred'")
+
+        if option == 'GDP': data = pd.read_excel(path, sheet_name='GDP',usecols=[0,1])
+        elif option == 'CPI': data = pd.read_excel(path, sheet_name='CPI',usecols=[0,1])
+        elif option == 'Foreign Invests' :data = pd.read_excel(path, sheet_name='Foreign Invests',usecols=[0,1])
+        elif option =='Exports': data = pd.read_excel(path, sheet_name='Exports',usecols=[0,1])
+        elif option =='Imports': data = pd.read_excel(path, sheet_name='Imports',usecols=[0,1])
+        elif option =='Private Consumption': data = pd.read_excel(path, sheet_name='Private Consumption',usecols=[0,1])
+        elif option =='Government Exp': data = pd.read_excel(path, sheet_name='Government Exp',usecols=[0,1])
+        elif option =='Country Invests - pred': data = pd.read_excel(path, sheet_name='Egypt Invests - pred',usecols=[0,1])
+        
+        else:
+            print("Invalid option. Please choose between: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests - pred'")
+            self.read_country_data(self.country)
+
+        # Conversion of the date format
+        data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
+        data = data.groupby(data.Date.dt.year)['Value'].mean()
+        print(data)
+        return data
+
+    def tone_analysis(self,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
 
         self.df = self._theme_filtering()
 
-        if gdp:
-            gdp = {'date':[2015,2016,2017,2018,2019,2020,2021],'gdp_per_capita':[3370.382447,3331.612461,2315.896627,2407.086543,2869.576588,3398.801432,3698.834981]}
-            df_gdp = pd.DataFrame(data = gdp)
-        else:
-            print("You didn't select a reference indicator to plot.")
+        if indicator:
+            ind = self.read_country_data()
 
         # Defining new column related to tone
         self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
@@ -135,6 +166,7 @@ class NowcastingEco:
         nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
         # Average of the tone of articles per year
         avg_tone = self.df.groupby(self.df.date.dt.year)['mean_tone'].mean()
+        print(avg_tone)
         # Ratio of pos and neg tone of articles per year
         ratio_tone = self.df.groupby(self.df.date.dt.year)['binary_tone'].mean()
 
@@ -143,13 +175,13 @@ class NowcastingEco:
         
         # First graph
         # plot the data
-        ax1.plot(avg_tone.loc[:2021],'r',label='Average tones')
-        ax1.axhline(avg_tone.loc[:2021].mean(), color='red', linestyle='--', label='Mean of average tones')
+        ax1.plot(avg_tone.loc[:2022],'r',label='Average tones')
+        ax1.axhline(avg_tone.loc[:2022].mean(), color='red', linestyle='--', label='Mean of average tones')
         # plot gdp if wanted
-        if gdp:
+        if indicator:
             ax1_twin = ax1.twinx()
-            ax1_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,'b',label='GDP')
-            ax1_twin.set_ylabel('Dollars')
+            ax1_twin.plot(ind,color='b',label='Indicator')
+            #ax1_twin.set_ylabel('Dollars')
             
         # set axis labels and title
         ax1.set_xlabel('date')
@@ -158,12 +190,12 @@ class NowcastingEco:
         ax1.set_title('Comparison between the evolution of the average tone and GDP per capita throughout the years ')
 
         # Second graph
-        ax2.plot(ratio_tone.loc[:2021],'g',label=' % positive articles')
-        ax2.axhline(ratio_tone.loc[:2021].mean(), color='green', linestyle='--', label='Mean %')
-        if gdp:
+        ax2.plot(ratio_tone.loc[:2022],'g',label=' % positive articles')
+        ax2.axhline(ratio_tone.loc[:2022].mean(), color='green', linestyle='--', label='Mean %')
+        if indicator:
             ax2_twin = ax2.twinx()
-            ax2_twin.plot(df_gdp.date,df_gdp.gdp_per_capita,'b',label='GDP')
-            ax2_twin.set_ylabel('Dollars')
+            ax2_twin.plot(ind,color='b',label='Indicator')
+            #ax2_twin.set_ylabel('Dollars')
 
         ax2.set_xlabel('date')
         ax2.set_ylabel('Percentage of articles')
