@@ -134,11 +134,11 @@ class NowcastingEco:
         (for now it will be local path)
         """
 
-        if 'EGYPT':
+        if self.country == 'Egypt':
             path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg _Data_Egypt.xlsx'
-        elif 'KSA':
+        elif self.country == 'KSA':
             path = 'x'
-        elif 'UAE':
+        elif self.country =='UAE':
             path = 'x'
         else:
             print('COUNTRY ERROR')
@@ -156,7 +156,7 @@ class NowcastingEco:
         
         else:
             print("Invalid option. Please choose between: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
-            self.read_country_data(self.country)
+            self.read_country_data()
 
         # Conversion of the date format
         data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
