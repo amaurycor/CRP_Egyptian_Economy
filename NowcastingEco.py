@@ -147,7 +147,7 @@ class NowcastingEco:
         # Conversion of the date format
         data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
-        print(data)
+        #print(data)
         return data
 
     def tone_analysis(self,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
@@ -166,7 +166,7 @@ class NowcastingEco:
         nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
         # Average of the tone of articles per year
         avg_tone = self.df.groupby(self.df.date.dt.year)['mean_tone'].mean()
-        print(avg_tone)
+        #print(avg_tone)
         # Ratio of pos and neg tone of articles per year
         ratio_tone = self.df.groupby(self.df.date.dt.year)['binary_tone'].mean()
 
