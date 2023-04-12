@@ -100,15 +100,15 @@ class NowcastingEco:
         theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
 
         if theme == 'CONSUMPTION':
-            theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER']
+            theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER', 'RECESSION', 'INFLATION', 'GROWTH']
             df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
         elif theme == 'TRADE':
-            theme_filter = ['TRADE','MARKET'] # don't find these two keywords in the title
+            theme_filter = ['TRADE','MARKET', 'EXPORTS', 'IMPORTS', 'PAYMENTS', 'DEFICIT', 'BALANCE', 'DEBT', 'BORROWING', 'SPENDING'] # don't find these two keywords in the title
             df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
         elif theme == 'EMPLOYMENT':
-            theme_filter = ['EMPLOYMENT','UNEMPLOYMENT']
+            theme_filter = ['EMPLOYMENT','UNEMPLOYMENT', 'LAYOFFS', 'SALARY', 'LABOR', 'STRIKES', 'UNIONS', 'WORKERS']
             df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
         
         else:
