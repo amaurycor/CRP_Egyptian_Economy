@@ -143,7 +143,7 @@ class NowcastingEco:
         else:
             print('COUNTRY ERROR')
 
-        option = input("Choose your indicator: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests - pred'")
+        option = input("Choose your indicator: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
 
         if option == 'GDP': data = pd.read_excel(path, sheet_name='GDP',usecols=[0,1])
         elif option == 'CPI': data = pd.read_excel(path, sheet_name='CPI',usecols=[0,1])
@@ -155,7 +155,7 @@ class NowcastingEco:
         elif option =='Country Invests - pred': data = pd.read_excel(path, sheet_name='Egypt Invests - pred',usecols=[0,1])
         
         else:
-            print("Invalid option. Please choose between: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests - pred'")
+            print("Invalid option. Please choose between: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
             self.read_country_data(self.country)
 
         # Conversion of the date format
@@ -170,7 +170,7 @@ class NowcastingEco:
         TO DO:
         - Computation of the correlation between indicator and the tone curves
         """
-        
+
         self.df = self._theme_filtering()
 
         if indicator:
