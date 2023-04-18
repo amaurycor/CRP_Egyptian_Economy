@@ -157,7 +157,7 @@ class NowcastingEco:
         elif self.country == 'KSA':
             path = 'x'
         elif self.country =='UAE':
-            path = '/content/Bloomberg Data - UAE.xlsx'
+            path = '/content/Bloomberg_Data_UAE.xlsx'
         else:
             print('COUNTRY ERROR')
 
