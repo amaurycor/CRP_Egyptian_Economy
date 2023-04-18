@@ -22,7 +22,7 @@ filter_dic = {
     'construction': ['infrastructure','estate','urbanization','skyscrapers','skyscraper','engineering',\
                      'contractors','contractor'],
     'finance': ['banking','banks','capital','stocks','stock','bonds','insurance','fintech','asset','shares'],
-    'tourism': ['travel','traveling','hospitality','tourists','destination','leisure','entertainment','hotels','hotel'\
+    'tourism': ['travel','traveling','hospitality','tourists','destination','leisure','entertainment','hotels','hotel',\
                 'attractions','events'],
     'transportation': ['transportation','logistics','shipping','port','ports','aviation','airlines','airline',\
                        'cargo','freight'],
