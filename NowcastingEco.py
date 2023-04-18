@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from urllib.parse import urlparse
 from datetime import datetime
 from scipy.stats import pearsonr
+import re
 
 class NowcastingEco:
 
