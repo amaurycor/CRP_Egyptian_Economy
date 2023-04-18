@@ -75,7 +75,7 @@ class NowcastingEco:
             title = re.findall('<PAGE_TITLE>(.*?)</PAGE_TITLE>', xml_string)[0]
         except:
             title = 'NA'
-        return 
+        return title
         
     def xml_cleaning(self, sentence):
         sentence = str(sentence)
