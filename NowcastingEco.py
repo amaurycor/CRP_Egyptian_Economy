@@ -68,10 +68,26 @@ class NowcastingEco:
         list_ = list(string.split(","))
         list_ = [eval(i) for i in list_] # to get a float list
         return list_
+        
+    def extract_title(self,xml_string):
+        try:
+            title = re.findall('<PAGE_TITLE>(.*?)</PAGE_TITLE>', xml_string)[0]
+        except:
+            title = 'NA'
+        return 
+        
+    def xml_cleaning(self, sentence):
+        sentence = str(sentence)
+        words = [elem.upper() for elem in sentence.split(' ')]
+        return words
 
     def clean_data(self):
 
         self.set_country_filter()
+        
+        self.df['xml_headline'] = self.df['extrasxml'].apply(lambda x: self.extract_title(x))
+
+        self.df['cleaned_xml'] = self.df['xml_headline'].apply(lambda x: self.xml_cleaning(x))
 
         self.df['cleaned_locations'] = self.df['enhancedlocations'].apply(lambda x: self._country_filtering(x))
 
@@ -85,7 +101,7 @@ class NowcastingEco:
 
         self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
 
-        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes'], inplace=True)
+        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'xml_headline'], inplace=True)
 
         self.df = self.df
 
@@ -140,7 +156,7 @@ class NowcastingEco:
         elif self.country == 'KSA':
             path = 'x'
         elif self.country =='UAE':
-            path = 'x'
+            path = '/content/Bloomberg Data - UAE.xlsx'
         else:
             print('COUNTRY ERROR')
 
