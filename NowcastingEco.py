@@ -129,16 +129,8 @@ class NowcastingEco:
 
         if theme.lower() in map(str.lower, filter_dic):
             theme_filter = filter_dic[theme.lower()]
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x.lower() for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
-
-        # elif theme == 'TRADE':
-        #     theme_filter = ['TRADE','MARKET', 'EXPORTS', 'IMPORTS', 'PAYMENTS', 'DEFICIT', 'BALANCE', 'DEBT', 'BORROWING', 'SPENDING'] # don't find these two keywords in the title
-        #     df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
-
-        # elif theme == 'EMPLOYMENT':
-        #     theme_filter = ['EMPLOYMENT','UNEMPLOYMENT', 'LAYOFFS', 'SALARY', 'LABOR', 'STRIKES', 'UNIONS', 'WORKERS']
-        #     df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
-        
+            df = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+    
         else:
             print('ERROR Invalid input')
             self.set_country_filter()   
@@ -180,7 +172,7 @@ class NowcastingEco:
             self.read_country_data()
 
         # Conversion of the date format
-        data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
+        # data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
         #print(data)
         return data, option
@@ -248,7 +240,7 @@ class NowcastingEco:
         ax2.set_xlabel('date')
         ax2.set_ylabel('Percentage of articles')
 
-        if len(ind) > len(ratio_tone.loc[:2022]):
+        if len(ind) > len(ratio_tone.loc[:2020]):
             corr_2, _ = pearsonr(ratio_tone.loc[:2022], ind.loc[2015:2022])
             print(f"The correlation between the positive article ratio and the {name_ind} from 2015 is: {corr_2}.")
 
