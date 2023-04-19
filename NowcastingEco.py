@@ -125,23 +125,25 @@ class NowcastingEco:
         theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
 
         if theme == 'CONSUMPTION':
-            theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER', 'RECESSION', 'INFLATION', 'GROWTH']
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
-
+            theme_filter = ['consum(e|er|ing|ption|ers|erism)|purchas(e|ing|ers)|buyer|recession|inflation|growth']
+            pattern = re.compile('|'.join(theme_filter), flags=re.IGNORECASE)
+            df = df[df['cleaned_themes'].apply(lambda x: re.findall(pattern, x))]
+    
         elif theme == 'TRADE':
-            theme_filter = ['TRADE','MARKET', 'EXPORTS', 'IMPORTS', 'PAYMENTS', 'DEFICIT', 'BALANCE', 'DEBT', 'BORROWING', 'SPENDING'] # don't find these two keywords in the title
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+            theme_filter = ['trad(e|es|er|ing|ption|ers|erism)|marke(t|ts)|export(s|er|ing|ption|ers|erism)|import(s|er|ing|ption|ers|erism)|payments|deficit|balance|deb(t|ts)|borrowing|spending']
+            pattern = re.compile('|'.join(theme_filter), flags=re.IGNORECASE)
+            df = df[df['cleaned_themes'].apply(lambda x: re.findall(pattern, x))]
 
         elif theme == 'EMPLOYMENT':
-            theme_filter = ['EMPLOYMENT','UNEMPLOYMENT', 'LAYOFFS', 'SALARY', 'LABOR', 'STRIKES', 'UNIONS', 'WORKERS']
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
-        
+            theme_filter = ['employ(ed|ment|er|ee|ability|ing|ment)|benefits|unemploy(ment|ed|ability)|layof(f|fs)|salar(y|ies)|labor|strik(e|es)|unions|worke(r|rs)']
+            pattern = re.compile('|'.join(theme_filter), flags=re.IGNORECASE)
+            df = df[df['cleaned_themes'].apply(lambda x: re.findall(pattern, x))]
+
         else:
             print('ERROR Invalid input')
-            self.set_country_filter()   
+            self.set_country_filter()
 
         self.df = df
-
         return self.df # filtered dataframe containing only data related to the corresponding theme
 
     def read_country_data(self):
