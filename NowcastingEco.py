@@ -123,7 +123,7 @@ class NowcastingEco:
 
         df = self.df # to make it iterable
 
-        theme = input('Choose a theme filter option "consumption", "expenditure", "trade", "investment", "employment",\
+        theme = input('Choose a theme filter option "GDP", "consumption", "expenditure", "trade", "investment", "employment",\
                       "manufacturing", "oil_gas", "construction", "finance", "tourism", "transportation", "real estate",\
                       "ICT": ')
 
