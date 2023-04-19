@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 from scipy.stats import pearsonr
 import re
+from filter_dictionary import filter_dic
 
 class NowcastingEco:
 
@@ -122,19 +123,21 @@ class NowcastingEco:
 
         df = self.df # to make it iterable
 
-        theme = input('Choose a theme filter option "CONSUMPTION", "TRADE", "EMPLOYMENT": ')
+        theme = input('Choose a theme filter option "consumption", "expenditure", "trade", "investment", "employment",\
+                      "manufacturing", "oil_gas", "construction", "finance", "tourism", "transportation", "real estate",\
+                      "ICT": ')
 
-        if theme == 'CONSUMPTION':
-            theme_filter = ['CONSUMPTION','CONSUME','CONSUMER','PURCHASE','PURCHASING','PURCHASER','BUYER', 'RECESSION', 'INFLATION', 'GROWTH']
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+        if theme.lower() in map(str.lower, filter_dic):
+            theme_filter = filter_dic[theme.lower()]
+            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x.lower() for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
 
-        elif theme == 'TRADE':
-            theme_filter = ['TRADE','MARKET', 'EXPORTS', 'IMPORTS', 'PAYMENTS', 'DEFICIT', 'BALANCE', 'DEBT', 'BORROWING', 'SPENDING'] # don't find these two keywords in the title
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
+        # elif theme == 'TRADE':
+        #     theme_filter = ['TRADE','MARKET', 'EXPORTS', 'IMPORTS', 'PAYMENTS', 'DEFICIT', 'BALANCE', 'DEBT', 'BORROWING', 'SPENDING'] # don't find these two keywords in the title
+        #     df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in filter))]
 
-        elif theme == 'EMPLOYMENT':
-            theme_filter = ['EMPLOYMENT','UNEMPLOYMENT', 'LAYOFFS', 'SALARY', 'LABOR', 'STRIKES', 'UNIONS', 'WORKERS']
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+        # elif theme == 'EMPLOYMENT':
+        #     theme_filter = ['EMPLOYMENT','UNEMPLOYMENT', 'LAYOFFS', 'SALARY', 'LABOR', 'STRIKES', 'UNIONS', 'WORKERS']
+        #     df = df[df['cleaned_themes'].apply(lambda x: any(keyword in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
         
         else:
             print('ERROR Invalid input')
@@ -157,7 +160,7 @@ class NowcastingEco:
         elif self.country == 'KSA':
             path = 'x'
         elif self.country =='UAE':
-            path = '/content/Bloomberg_Data_UAE.xlsx'
+            path = '/Users/flickr-xc/Library/Mobile Documents/com~apple~CloudDocs/DSBA Courses/CRP/Bloomberg/Bloomberg_Data_UAE.xlsx'
         else:
             print('COUNTRY ERROR')
 
