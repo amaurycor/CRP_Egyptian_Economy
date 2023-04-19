@@ -155,7 +155,8 @@ class NowcastingEco:
         """
 
         if self.country == 'Egypt':
-            path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
+            path= '/Users/jeanlahellec/Desktop/CRP_Egyptian_Economy/Bloomberg _Data_Egypt.xlsx'
+            #path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
         elif self.country == 'KSA':
             path = 'x'
         elif self.country =='UAE':
