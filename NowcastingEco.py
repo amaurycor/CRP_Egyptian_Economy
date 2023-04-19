@@ -136,7 +136,6 @@ class NowcastingEco:
             self.set_country_filter()   
 
         self.df = df
-
         return self.df # filtered dataframe containing only data related to the corresponding theme
 
     def read_country_data(self):
@@ -148,7 +147,8 @@ class NowcastingEco:
         """
 
         if self.country == 'Egypt':
-            path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
+            path= '/Users/jeanlahellec/Desktop/CRP_Egyptian_Economy/Bloomberg _Data_Egypt.xlsx'
+            #path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
         elif self.country == 'KSA':
             path = 'x'
         elif self.country =='UAE':
