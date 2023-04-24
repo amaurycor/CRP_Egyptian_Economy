@@ -123,9 +123,7 @@ class NowcastingEco:
 
         df = self.df # to make it iterable
 
-        theme = input('Choose a theme filter option "GDP", "consumption", "expenditure", "trade", "investment", "employment",\
-                      "manufacturing", "oil_gas", "construction", "finance", "tourism", "transportation", "real estate",\
-                      "ICT": ')
+        theme = input('Choose a theme filter option:' + str(list(filter_dic.keys())) )
 
         if theme.lower() in map(str.lower, filter_dic):
             theme_filter = filter_dic[theme.lower()]
@@ -133,8 +131,9 @@ class NowcastingEco:
     
         else:
             print('ERROR Invalid input')
-            self.set_country_filter()   
-
+            self._theme_filtering()   
+            return None
+        
         self.df = df
         return self.df # filtered dataframe containing only data related to the corresponding theme
 
@@ -146,35 +145,18 @@ class NowcastingEco:
         (for now it will be local path)
         """
 
-        #if self.country == 'Egypt':
-        #    path= '/Users/jeanlahellec/Desktop/CRP_Egyptian_Economy/Bloomberg _Data_Egypt.xlsx'
-            #path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
-        #elif self.country == 'KSA':
-        #    path = 'x'
-        #elif self.country =='UAE':
-        #    path = '/Users/flickr-xc/Library/Mobile Documents/com~apple~CloudDocs/DSBA Courses/CRP/Bloomberg/Bloomberg_Data_UAE.xlsx'
-        #else:
-        #    print('COUNTRY ERROR')
-
         sheet_names = pd.ExcelFile(path).sheet_names
 
         option = input("Choose your indicator:" + str(sheet_names))
-                       #'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
 
         if option in sheet_names: data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
-        #elif option == 'CPI': data = pd.read_excel(path, sheet_name='CPI',usecols=[0,1])
-        #elif option == 'Foreign Invests' :data = pd.read_excel(path, sheet_name='Foreign Invests',usecols=[0,1])
-        #elif option =='Exports': data = pd.read_excel(path, sheet_name='Exports',usecols=[0,1])
-        #elif option =='Imports': data = pd.read_excel(path, sheet_name='Imports',usecols=[0,1])
-        #elif option =='Private Consumption': data = pd.read_excel(path, sheet_name='Private Consumption',usecols=[0,1])
-        #elif option =='Government Exp': data = pd.read_excel(path, sheet_name='Government Exp',usecols=[0,1])
-        #elif option =='Country Invests - pred': data = pd.read_excel(path, sheet_name='Egypt Invests - pred',usecols=[0,1])
-        
+
         else:
             print("Invalid option. Please choose between: " + str(sheet_names))
-                  #'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
-            self.read_country_data(path)
 
+            self.read_country_data(path)
+            return None
+        
         # Conversion of the date format
         data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
@@ -202,7 +184,6 @@ class NowcastingEco:
         nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
         # Average of the tone of articles per year
         avg_tone = self.df.groupby(self.df.date.dt.year)['mean_tone'].mean()
-        #print(avg_tone)
         # Ratio of pos and neg tone of articles per year
         ratio_tone = self.df.groupby(self.df.date.dt.year)['binary_tone'].mean()
 
@@ -213,10 +194,10 @@ class NowcastingEco:
         # plot the data
         ax1.plot(avg_tone,'r',label='Average tones')
         ax1.axhline(avg_tone.mean(), color='red', linestyle='--', label='Mean of average tones')
-        # plot gdp if wanted
+        # plot the indicator if wanted (from 2015 to match the start of headlines data)
         if indicator:
             ax1_twin = ax1.twinx()
-            ax1_twin.plot(ind,color='b',label=str(name_ind))
+            ax1_twin.plot(ind.loc[2015:],color='b',label=str(name_ind))
             #ax1_twin.set_ylabel('Dollars')
             
         # set axis labels and title
@@ -230,9 +211,9 @@ class NowcastingEco:
             max_date_ind = ind.index.max()
             max_date_avg_tone = avg_tone.index.max()
             max_date = min(max_date_avg_tone,max_date_ind)
-            if len(ind) > len(avg_tone.loc[:max_date]):
-                corr_1, _ = pearsonr(avg_tone.loc[:max_date], ind.loc[2015:max_date])
-                print(f"The correlation between the average tones and the {name_ind} from 2015 to {max_date} is: {corr_1}.")
+            #if len(ind) > len(avg_tone.loc[:max_date]):
+            corr_1, _ = pearsonr(avg_tone.loc[:max_date], ind.loc[2015:max_date])
+            print(f"The correlation between the average tones and the {name_ind} from 2015 to {max_date} is: {corr_1}.")
 
         ax1.legend()
         ax1.set_title(f'Evolution of the average tone and {name_ind} throughout the years ')
@@ -242,19 +223,20 @@ class NowcastingEco:
         ax2.axhline(ratio_tone.mean(), color='green', linestyle='--', label='Mean %')
         if indicator:
             ax2_twin = ax2.twinx()
-            ax2_twin.plot(ind,color='b',label=str(name_ind))
+            ax2_twin.plot(ind.loc[2015:],color='b',label=str(name_ind))
             #ax2_twin.set_ylabel('Dollars')
 
         ax2.set_xlabel('date')
         ax2.set_ylabel('Percentage of articles')
 
         if indicator:
+            # Compute the max date of the indicator and the headlines to have the same length and compute the correlation
             max_date_ind = ind.index.max()
             max_date_ratio_tone = avg_tone.index.max()
             max_date = min(max_date_ratio_tone,max_date_ind)
-            if len(ind) > len(ratio_tone.loc[:max_date]):
-                corr_2, _ = pearsonr(ratio_tone.loc[:max_date], ind.loc[2015:max_date])
-                print(f"The correlation between the positive article ratio and the {name_ind} from 2015 to {max_date} is: {corr_2}.")
+            #if len(ind) > len(ratio_tone.loc[:max_date]):
+            corr_2, _ = pearsonr(ratio_tone.loc[:max_date], ind.loc[2015:max_date])
+            print(f"The correlation between the positive article ratio and the {name_ind} from 2015 to {max_date} is: {corr_2}.")
 
         ax2.legend()
         ax2.set_title(f'Evolution of the positive toned articles ratio and {name_ind} throughout the years ')
