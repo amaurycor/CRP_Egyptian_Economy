@@ -138,7 +138,7 @@ class NowcastingEco:
         self.df = df
         return self.df # filtered dataframe containing only data related to the corresponding theme
 
-    def read_country_data(self):
+    def read_country_data(self,path):
         
         """
         TO DO:
@@ -146,38 +146,42 @@ class NowcastingEco:
         (for now it will be local path)
         """
 
-        if self.country == 'Egypt':
-            path= '/Users/jeanlahellec/Desktop/CRP_Egyptian_Economy/Bloomberg _Data_Egypt.xlsx'
+        #if self.country == 'Egypt':
+        #    path= '/Users/jeanlahellec/Desktop/CRP_Egyptian_Economy/Bloomberg _Data_Egypt.xlsx'
             #path = '/Users/amaury/Documents/!DSBA/CRP/Bloomberg_Data_Egypt.xlsx'
-        elif self.country == 'KSA':
-            path = 'x'
-        elif self.country =='UAE':
-            path = '/Users/flickr-xc/Library/Mobile Documents/com~apple~CloudDocs/DSBA Courses/CRP/Bloomberg/Bloomberg_Data_UAE.xlsx'
-        else:
-            print('COUNTRY ERROR')
+        #elif self.country == 'KSA':
+        #    path = 'x'
+        #elif self.country =='UAE':
+        #    path = '/Users/flickr-xc/Library/Mobile Documents/com~apple~CloudDocs/DSBA Courses/CRP/Bloomberg/Bloomberg_Data_UAE.xlsx'
+        #else:
+        #    print('COUNTRY ERROR')
 
-        option = input("Choose your indicator: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
+        sheet_names = pd.ExcelFile(path).sheet_names
 
-        if option == 'GDP': data = pd.read_excel(path, sheet_name='GDP',usecols=[0,1])
-        elif option == 'CPI': data = pd.read_excel(path, sheet_name='CPI',usecols=[0,1])
-        elif option == 'Foreign Invests' :data = pd.read_excel(path, sheet_name='Foreign Invests',usecols=[0,1])
-        elif option =='Exports': data = pd.read_excel(path, sheet_name='Exports',usecols=[0,1])
-        elif option =='Imports': data = pd.read_excel(path, sheet_name='Imports',usecols=[0,1])
-        elif option =='Private Consumption': data = pd.read_excel(path, sheet_name='Private Consumption',usecols=[0,1])
-        elif option =='Government Exp': data = pd.read_excel(path, sheet_name='Government Exp',usecols=[0,1])
-        elif option =='Country Invests - pred': data = pd.read_excel(path, sheet_name='Egypt Invests - pred',usecols=[0,1])
+        option = input("Choose your indicator:" + str(sheet_names))
+                       #'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
+
+        if option in sheet_names: data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
+        #elif option == 'CPI': data = pd.read_excel(path, sheet_name='CPI',usecols=[0,1])
+        #elif option == 'Foreign Invests' :data = pd.read_excel(path, sheet_name='Foreign Invests',usecols=[0,1])
+        #elif option =='Exports': data = pd.read_excel(path, sheet_name='Exports',usecols=[0,1])
+        #elif option =='Imports': data = pd.read_excel(path, sheet_name='Imports',usecols=[0,1])
+        #elif option =='Private Consumption': data = pd.read_excel(path, sheet_name='Private Consumption',usecols=[0,1])
+        #elif option =='Government Exp': data = pd.read_excel(path, sheet_name='Government Exp',usecols=[0,1])
+        #elif option =='Country Invests - pred': data = pd.read_excel(path, sheet_name='Egypt Invests - pred',usecols=[0,1])
         
         else:
-            print("Invalid option. Please choose between: 'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
-            self.read_country_data()
+            print("Invalid option. Please choose between: " + str(sheet_names))
+                  #'GDP','CPI','Foreign Invests' ,'Exports','Imports','Private Consumption','Government Exp','Country Invests'")
+            self.read_country_data(path)
 
         # Conversion of the date format
-        # data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
+        data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
         #print(data)
         return data, option
 
-    def tone_analysis(self,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
+    def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
         
         """
         TO DO:
@@ -187,7 +191,7 @@ class NowcastingEco:
         self.df = self._theme_filtering()
 
         if indicator:
-            ind, name_ind = self.read_country_data()
+            ind, name_ind = self.read_country_data(path)
 
         # Defining new column related to tone
         self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
@@ -207,8 +211,8 @@ class NowcastingEco:
         
         # First graph
         # plot the data
-        ax1.plot(avg_tone.loc[:2022],'r',label='Average tones')
-        ax1.axhline(avg_tone.loc[:2022].mean(), color='red', linestyle='--', label='Mean of average tones')
+        ax1.plot(avg_tone,'r',label='Average tones')
+        ax1.axhline(avg_tone.mean(), color='red', linestyle='--', label='Mean of average tones')
         # plot gdp if wanted
         if indicator:
             ax1_twin = ax1.twinx()
@@ -222,16 +226,20 @@ class NowcastingEco:
         #Compute the pearson correlation 
         # => need the indicator to have more data (or equal) than avg_tone that starts in 2015
         #{\displaystyle \rho _{X,Y}={\frac {\operatorname {cov} (X,Y)}{\sigma _{X}\sigma _{Y}}}}
-        if len(ind) > len(avg_tone.loc[:2022]):
-            corr_1, _ = pearsonr(avg_tone.loc[:2022], ind.loc[2015:2022])
-            print(f"The correlation between the average tones and the {name_ind} from 2015 is: {corr_1}.")
+        if indicator:
+            max_date_ind = ind.index.max()
+            max_date_avg_tone = avg_tone.index.max()
+            max_date = min(max_date_avg_tone,max_date_ind)
+            if len(ind) > len(avg_tone.loc[:max_date]):
+                corr_1, _ = pearsonr(avg_tone.loc[:max_date], ind.loc[2015:max_date])
+                print(f"The correlation between the average tones and the {name_ind} from 2015 to {max_date} is: {corr_1}.")
 
         ax1.legend()
         ax1.set_title(f'Evolution of the average tone and {name_ind} throughout the years ')
 
         # Second graph
-        ax2.plot(ratio_tone.loc[:2022],'g',label=' % positive articles')
-        ax2.axhline(ratio_tone.loc[:2022].mean(), color='green', linestyle='--', label='Mean %')
+        ax2.plot(ratio_tone,'g',label=' % positive articles')
+        ax2.axhline(ratio_tone.mean(), color='green', linestyle='--', label='Mean %')
         if indicator:
             ax2_twin = ax2.twinx()
             ax2_twin.plot(ind,color='b',label=str(name_ind))
@@ -240,9 +248,13 @@ class NowcastingEco:
         ax2.set_xlabel('date')
         ax2.set_ylabel('Percentage of articles')
 
-        if len(ind) > len(ratio_tone.loc[:2020]):
-            corr_2, _ = pearsonr(ratio_tone.loc[:2022], ind.loc[2015:2022])
-            print(f"The correlation between the positive article ratio and the {name_ind} from 2015 is: {corr_2}.")
+        if indicator:
+            max_date_ind = ind.index.max()
+            max_date_ratio_tone = avg_tone.index.max()
+            max_date = min(max_date_ratio_tone,max_date_ind)
+            if len(ind) > len(ratio_tone.loc[:max_date]):
+                corr_2, _ = pearsonr(ratio_tone.loc[:max_date], ind.loc[2015:max_date])
+                print(f"The correlation between the positive article ratio and the {name_ind} from 2015 to {max_date} is: {corr_2}.")
 
         ax2.legend()
         ax2.set_title(f'Evolution of the positive toned articles ratio and {name_ind} throughout the years ')
