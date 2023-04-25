@@ -158,9 +158,9 @@ class NowcastingEco:
             return None
         
         # Conversion of the date format
-        data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
+        #data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
-        #print(data)
+
         return data, option
 
     def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
@@ -191,7 +191,6 @@ class NowcastingEco:
         fig , (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, figsize=(8, 12))
         
         # First graph
-        # plot the data
         ax1.plot(avg_tone,'r',label='Average tones')
         ax1.axhline(avg_tone.mean(), color='red', linestyle='--', label='Mean of average tones')
         # plot the indicator if wanted (from 2015 to match the start of headlines data)
