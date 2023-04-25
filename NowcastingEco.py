@@ -146,7 +146,7 @@ class NowcastingEco:
         """
 
         sheet_names = pd.ExcelFile(path).sheet_names
-
+ 
         option = input("Choose your indicator:" + str(sheet_names))
 
         if option in sheet_names: data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
@@ -158,7 +158,7 @@ class NowcastingEco:
             return None
         
         # Conversion of the date format
-        #data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%m/%d/%y'))  
+        #data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%d/%m/%Y'))  
         data = data.groupby(data.Date.dt.year)['Value'].mean()
 
         return data, option
