@@ -3,7 +3,7 @@
 # the values are the lists of keywords: the most relevant single-word keywords that cooccur with the concept of that GDP subcomponent
 
 filter_dic = {
-    'GDP': ['consume','consumer','consumption','purchase','purchasing','purchases','buyer','durable','non-durable',\
+    'gdp': ['consume','consumer','consumption','purchase','purchasing','purchases','buyer','durable','non-durable',\
         'spending','household','inflation','retail','income','services','prices',\
         'lifestyle','growth','cpi','expenditures','expenditure','fiscal','subsidies','subsidy','budget',\
         'deficit','taxes','tax','stimulus','debt','earmarks','earmark','military','healthcare',\
@@ -57,6 +57,6 @@ filter_dic = {
 
     'real estate': ['housing','property', 'estate'],
     
-    'ICT': ['digital','telecommunications','internet','software','cybersecurity','e-commerce','technology','data',\
+    'ict': ['digital','telecommunications','internet','software','cybersecurity','e-commerce','technology','data',\
             'telecom','cloud','intelligence','artificial']
     }
