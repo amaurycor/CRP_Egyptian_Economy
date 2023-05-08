@@ -101,9 +101,13 @@ class NowcastingEco:
 
         self.df['cleaned_url'] = self.df['documentidentifier'].apply(lambda x: self.title_url(x))
 
-        self.df['cleaned_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
+        self.df['old_themes'] = self.df['enhancedthemes'].apply(lambda x: self.headlines_cleaning(x))
 
-        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'xml_headline'], inplace=True)
+        self.df['cleaned_themes'] = self.df.apply(lambda x: x['old_themes'] + x['cleaned_url'] if x['cleaned_xml'] == ['na'] else x['old_themes'] + x['cleaned_xml'], axis=1)
+
+        self.df['cleaned_themes'] = self.df['cleaned_themes'].apply(lambda x: [s.upper() for s in x])
+
+        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'xml_headline', 'cleaned_url' , 'cleaned_xml' , 'old_themes'], inplace=True)
 
         self.df = self.df
 
