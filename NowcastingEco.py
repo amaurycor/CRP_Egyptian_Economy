@@ -131,15 +131,14 @@ class NowcastingEco:
 
         if theme.lower() in map(str.lower, filter_dic):
             theme_filter = filter_dic[theme.lower()]
-            df = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
+            df2 = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
     
         else:
             print('ERROR Invalid input')
             self._theme_filtering()   
             return None
         
-        self.df = df
-        return self.df # filtered dataframe containing only data related to the corresponding theme
+        return df2 # filtered dataframe containing only data related to the corresponding theme
 
     def read_country_data(self,path):
         
@@ -174,22 +173,22 @@ class NowcastingEco:
         - Computation of the correlation between indicator and the tone curves => DONE
         """
 
-        self.df = self._theme_filtering()
+        df2 = self._theme_filtering()
 
         if indicator:
             ind, name_ind = self.read_country_data(path)
 
         # Defining new column related to tone
-        self.df['mean_tone'] = self.df.tone.apply(lambda x: x[0])
-        self.df['binary_tone'] = self.df.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
-        boxplot_df = self.df.groupby(self.df.date.dt.year)
+        df2['mean_tone'] = df2.tone.apply(lambda x: x[0])
+        df2['binary_tone'] = df2.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
+        boxplot_df = df2.groupby(df2.date.dt.year)
 
         # Count the filtered number of articles per year
-        nb_articles = self.df.groupby(self.df.date.dt.year)['cleaned_themes'].count()
+        nb_articles = df2.groupby(df2.date.dt.year)['cleaned_themes'].count()
         # Average of the tone of articles per year
-        avg_tone = self.df.groupby(self.df.date.dt.year)['mean_tone'].mean()
+        avg_tone = df2.groupby(df2.date.dt.year)['mean_tone'].mean()
         # Ratio of pos and neg tone of articles per year
-        ratio_tone = self.df.groupby(self.df.date.dt.year)['binary_tone'].mean()
+        ratio_tone = df2.groupby(df2.date.dt.year)['binary_tone'].mean()
 
         ### Plotting ###
         fig , (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, figsize=(8, 12))
