@@ -131,15 +131,14 @@ class NowcastingEco:
 
         if theme.lower() in map(str.lower, filter_dic):
             theme_filter = filter_dic[theme.lower()]
-            df2 = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]
-    
+            df2 = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]         
+            # self.df = df
+            return df2 # filtered dataframe containing only data related to the corresponding theme
+
         else:
             print('ERROR Invalid input')
             self._theme_filtering()   
-            return None
-        
-        # self.df = df
-        return df2 # filtered dataframe containing only data related to the corresponding theme
+
 
     def read_country_data(self,path):
         
@@ -153,19 +152,20 @@ class NowcastingEco:
  
         option = input("Choose your indicator:" + str(sheet_names))
 
-        if option in sheet_names: data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
+        if option in sheet_names: 
+            data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
+            # Conversion of the date format
+            #data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%d/%m/%Y'))  
+            data = data.groupby(data.Date.dt.year)['Value'].mean()
+            return data, option
 
         else:
             print("Invalid option. Please choose between: " + str(sheet_names))
 
             self.read_country_data(path)
-            return None
+  
         
-        # Conversion of the date format
-        #data.Date = data.Date.apply(lambda x: datetime.strptime(str(x), '%d/%m/%Y'))  
-        data = data.groupby(data.Date.dt.year)['Value'].mean()
 
-        return data, option
 
     def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
         
