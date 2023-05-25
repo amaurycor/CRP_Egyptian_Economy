@@ -116,13 +116,14 @@ class NowcastingEco:
     #############
     ### Tone part
     #############
+
     def _theme_filtering(self):   
 
         """
         TO DO:
-        - Add regex
-        - Adapt the filtering column rules
-        - Revise the filters lists and keywords
+        - Add regex => DONE
+        - Adapt the filtering column rules => DONE
+        - Revise the filters lists and keywords => DONE
         """
 
         df = self.df # to make it iterable
@@ -137,7 +138,7 @@ class NowcastingEco:
         if theme.lower() in map(str.lower, filter_dic):
             theme_filter = filter_dic[theme.lower()]
             df2 = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]         
-            # self.df = df
+
             return df2 # filtered dataframe containing only data related to the corresponding theme
 
 
@@ -147,7 +148,7 @@ class NowcastingEco:
         
         """
         TO DO:
-        - Add path to the indicators data of each country
+        - Add path to the indicators data of each country => DONE
         (for now it will be local path)
         """
 
@@ -158,32 +159,31 @@ class NowcastingEco:
         while option not in sheet_names:
             print("Invalid option. Please choose between: " + str(sheet_names))
             option = input("Choose your indicator:" + str(sheet_names))
-            #self.read_country_data(path)
-            
+
         if option in sheet_names: 
             data = pd.read_excel(path, sheet_name=str(option),usecols=[0,1])
-
+            
             # Create a column with year+month and just the year
             data['year_month'] = data['Date'].dt.to_period('M')
 
             data['year'] = data['Date'].dt.to_period('2Y')
             data['year'] = data['year'].dt.year
 
+            
             ## To check the indicator frequency
-            # Calculate the time difference between consecutive dates
-            time_diff = -data['Date'].diff()[1:]
-            num_days = time_diff.dt.days.astype(int)
+            data.set_index('Date', inplace=True)
+            freq_estimate = (data.index[0] - data.index[1]).days
 
             # Check if the time difference is consistent with a monthly frequency
-            if min(num_days) > 27 and min(num_days) < 32: # if greater than 27 and samller than 32 => monthly freq
-                is_monthly = True
+            if freq_estimate > 27 and freq_estimate < 32: # if greater than 27 and samller than 32 => monthly freq
+                freq = 'M'
+            elif freq_estimate > 89 and freq_estimate < 93: # quarterly freq
+                freq = 'Q'
             else:
-                is_monthly = False
+                freq = 'Y' # otherwise it's yearly
 
-            return data, option, is_monthly
+            return data, option, freq
   
-        
-
 
     def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
         
@@ -191,46 +191,26 @@ class NowcastingEco:
         TO DO:
         - Computation of the correlation between indicator and the tone curves => DONE
         """
-
+        # Filtering tone data according to selected filter
         df2 = self._theme_filtering()
-        # To be able to compute either on a yearly or monthly basis
-        df2['year_month'] = df2['date'].dt.to_period('M')
-        #df2['year_month'] = df2['year_month'].dt.to_timestamp()
-        df2['year'] = df2['date'].dt.to_period('2Y')
-        #df2['year'] = df2['year'].dt.year
 
+        # Set the date as index for the news data
+        df2.set_index('date', inplace=True)
+        
         if indicator:
-            ind, name_ind, is_monthly = self.read_country_data(path)
-            if is_monthly: # monthly frequency is true
-                tone_date_column = df2['year_month']
-                ind_date_column = ind['year_month']
-            else: # else yearly frequency
-                tone_date_column = df2['year']
-                ind_date_column = ind['year']
+            ind, name_ind, freq = self.read_country_data(path)
             
         # Defining new column related to tone
         df2['mean_tone'] = df2.tone.apply(lambda x: x[0])
         df2['binary_tone'] = df2.tone.apply(lambda x: 1 if x[1] > x[2] else 0)
-        boxplot_df = df2.groupby(df2.date.dt.year)
+        boxplot_df = df2.groupby(df2.index.year)
 
         # Count the filtered number of articles per year
-        nb_articles = df2.groupby(tone_date_column)['cleaned_themes'].count()
+        nb_articles = df2.resample(freq,convention='end')['cleaned_themes'].count()
         # Average of the tone of articles per year
-        avg_tone = df2.groupby(tone_date_column)['mean_tone'].mean()
+        avg_tone = df2.resample(freq,convention='end')['mean_tone'].mean()
         # Ratio of pos and neg tone of articles per year
-        ratio_tone = df2.groupby(tone_date_column)['binary_tone'].mean()
-
-        # Grouping by the indicator values according to the frequency
-        ind = ind.groupby(ind_date_column)['Value'].mean()
-
-        # Modiying the index to make it plotable
-        if is_monthly:
-            avg_tone.index = avg_tone.index.to_timestamp()
-            ratio_tone.index = ratio_tone.index.to_timestamp()
-            ind.index = ind.index.to_timestamp()
-        else:
-            avg_tone.index = avg_tone.index.year
-            ratio_tone.index = ratio_tone.index.year
+        ratio_tone = df2.resample(freq,convention='end')['binary_tone'].mean()
 
         ### Plotting ###
         fig , (ax1,ax2,ax3) = plt.subplots(nrows=3, ncols=1, figsize=(8, 12))
@@ -245,21 +225,21 @@ class NowcastingEco:
             ax1_twin = ax1.twinx()
 
             # Defining the starting date according to the data freq
-            if is_monthly:
-                ind = ind[ind.index >= '2015-02-01']
-            else:
-                ind = ind[ind.index >= 2015] 
-                
+            ind = ind[ind.index >= '2015-02-01']
+            ind.sort_index(inplace=True) # reorder to easily .loc[]
+
             # Plotting the indicator from the starting date
-            ax1_twin.plot(ind,color='b',label=str(name_ind))
+            ax1_twin.plot(ind.Value,color='b',label=str(name_ind))
             
-            #Compute the pearson correlation 
-            # NEED the indicator to have more data (or equal) than avg_tone that starts in 2015
+            # Compute the pearson correlation 
             max_date_ind = ind.index.max()
             max_date_avg_tone = avg_tone.index.max()
             max_date = min(max_date_ind,max_date_avg_tone)
+
             # To get indicator until max date only
-            corr_1, _ = pearsonr(avg_tone.loc[:max_date], ind.loc[:max_date])
+            print(avg_tone.loc[:max_date])
+            print(ind.Value.loc[:max_date])
+            corr_1, _ = pearsonr(avg_tone.loc[:max_date], ind.Value.loc[:max_date])
 
             print(f"The correlation between the average tones and the {name_ind} from 2015 to {max_date} is: {corr_1}.")
 
@@ -279,10 +259,10 @@ class NowcastingEco:
             ax2_twin = ax2.twinx()
             
             # Plotting the indicator from the (previously computed) starting date 
-            ax2_twin.plot(ind,color='b',label=str(name_ind))
+            ax2_twin.plot(ind.Value,color='b',label=str(name_ind))
             
-            #Compute the pearson correlation (based on the max date previously computed)
-            corr_2, _ = pearsonr(ratio_tone.loc[:max_date], ind.loc[:max_date])
+            # Compute the pearson correlation (based on the max date previously computed)
+            corr_2, _ = pearsonr(ratio_tone.loc[:max_date], ind.Value.loc[:max_date])
 
             print(f"The correlation between the average tones and the {name_ind} from 2015 to {max_date} is: {corr_2}.")
 
