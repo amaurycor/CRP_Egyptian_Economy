@@ -290,6 +290,9 @@ class NowcastingEco:
         """
         """
         tone_time_series = []
+        # Load the indicator to get its frequency and adapt the frequency of the tone time series
+        ind, _, freq = self.read_country_data(path)
+
         for theme in map(str.lower, filter_dic):
 
             # Filtering tone data according to selected filter
@@ -298,9 +301,6 @@ class NowcastingEco:
 
             # Set the date as index for the news data
             df3.set_index('date', inplace=True)
-
-            # Load the indicator to get its frequency and adapt the frequency of the tone time series
-            ind, _, freq = self.read_country_data(path)
 
             # Transform the new tone comptued with NLP model into a binary : 1 for positive and 0 for negative
             df3['binary_tone'] = df3.new_tone.apply(lambda x: 1 if x == "positive" else 0)
