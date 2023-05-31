@@ -286,7 +286,7 @@ class NowcastingEco:
         print('Number of articles per year for the filtered country and theme: ',nb_articles)
 
 
-    def compute_tone_time_series(self,path):
+    def compute_tone_time_series(self,dataframe,path):
         """
         """
         tone_time_series = []
@@ -297,13 +297,14 @@ class NowcastingEco:
 
             # Filtering tone data according to selected filter
             theme_filter = filter_dic[theme.lower()]
-            df3 = self.df[self.df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ]       
+            df3 = dataframe[dataframe['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ]       
 
             # Set the date as index for the news data
             df3.set_index('date', inplace=True)
+            df3.index = pd.to_datetime(df3.index)
 
             # Transform the new tone comptued with NLP model into a binary : 1 for positive and 0 for negative
-            df3['binary_tone'] = df3.new_tone.apply(lambda x: 1 if x == "positive" else 0)
+            df3['binary_tone'] = df3.tone_prediction.apply(lambda x: 1 if x == "neutral" else 0)
 
             # Ratio of pos and neg tone of articles per year =>
             ratio_tone = df3.resample(freq,convention='end')['binary_tone'].mean()
