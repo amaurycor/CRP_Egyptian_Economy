@@ -107,7 +107,7 @@ class NowcastingEco:
 
         self.df['cleaned_themes'] = self.df['cleaned_themes'].apply(lambda x: [s.upper() for s in x])
 
-        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'xml_headline', 'cleaned_url' , 'cleaned_xml' , 'old_themes'], inplace=True)
+        self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'old_themes'], inplace=True)
 
         self.df = self.df
 
