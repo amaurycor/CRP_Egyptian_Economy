@@ -82,6 +82,14 @@ class NowcastingEco:
         sentence = str(sentence)
         words = [elem.upper() for elem in sentence.split(' ')]
         return words
+    
+    def adjust_headline(self,row):
+        if row['cleaned_xml'] and row['cleaned_xml'] != ['NA']:
+            return row['cleaned_xml']
+        elif row['cleaned_url'] and row['cleaned_url'] != ['NA']:
+            return row['cleaned_url']
+        else:
+            return []
 
     def clean_data(self):
 
@@ -107,11 +115,21 @@ class NowcastingEco:
 
         self.df['cleaned_themes'] = self.df['cleaned_themes'].apply(lambda x: [s.upper() for s in x])
 
+        self.df['adjust_headline'] = self.df.apply(self.adjust_headline,axis = 1)
+
+        self.df_filtered = self.df[self.df['adjust_headline'].apply(lambda x: x != [] and x != ['NA'])].reset_index(drop=True)
+        
+        self.df_filtered['adjust_headline'] = self.df_filtered['adjust_headline'].apply(lambda x: ' '.join(x))
+
+        self.df_filtered['adjust_headline'] = self.df_filtered['adjust_headline'].apply(lambda x: x.lower())
+
         self.df.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'old_themes'], inplace=True)
+
+        self.df_filtered.drop(columns=['enhancedlocations', 'documentidentifier', 'enhancedthemes' , 'extrasxml' , 'old_themes'], inplace=True)
 
         self.df = self.df
 
-        return self.df
+        return self.df, self.df_filtered
 
     #############
     ### Tone part
@@ -140,7 +158,6 @@ class NowcastingEco:
             df2 = df[df['cleaned_themes'].apply(lambda x: any(keyword.upper() in x for keyword in theme_filter)) ] #and self.df['cleaned_url'].apply(lambda x: any(keyword in x for keyword in theme_filter))]         
 
             return df2 # filtered dataframe containing only data related to the corresponding theme
-
 
 
 
@@ -304,7 +321,7 @@ class NowcastingEco:
             df3.index = pd.to_datetime(df3.index)
 
             # Transform the new tone comptued with NLP model into a binary : 1 for positive and 0 for negative
-            df3['binary_tone'] = df3.tone_prediction.apply(lambda x: 1 if x == "neutral" else 0)
+            df3['binary_tone'] = df3.tone_prediction.apply(lambda x: 1 if x == "negative" else 0)
 
             # Ratio of pos and neg tone of articles per year =>
             ratio_tone = df3.resample(freq,convention='end')['binary_tone'].mean()
