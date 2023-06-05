@@ -321,7 +321,7 @@ class NowcastingEco:
             df3.index = pd.to_datetime(df3.index)
 
             # Transform the new tone comptued with NLP model into a binary : 1 for positive and 0 for negative
-            df3['binary_tone'] = df3.tone_prediction.apply(lambda x: 1 if x == "negative" else 0)
+            df3['binary_tone'] = df3.tone_prediction.apply(lambda x: 1 if x == "positive" else 0)
 
             # Ratio of pos and neg tone of articles per year =>
             ratio_tone = df3.resample(freq,convention='end')['binary_tone'].mean()
