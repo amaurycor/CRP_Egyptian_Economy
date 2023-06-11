@@ -8,7 +8,10 @@ import re
 from filter_dictionary import filter_dic
 
 class NowcastingEco:
-
+    """
+    This NowcastingEco class gathers and streamlined each functions need during our analysis.
+    It allows to clean and preprocess the "news" data provided by QuantCube
+    """
     def __init__(self,df):
         self.country_filter = []
         self.theme_filter = []
@@ -138,10 +141,7 @@ class NowcastingEco:
     def _theme_filtering(self):   
 
         """
-        TO DO:
-        - Add regex => DONE
-        - Adapt the filtering column rules => DONE
-        - Revise the filters lists and keywords => DONE
+        
         """
 
         df = self.df # to make it iterable
@@ -164,9 +164,7 @@ class NowcastingEco:
     def read_country_data(self,path):
         
         """
-        TO DO:
-        - Add path to the indicators data of each country => DONE
-        (for now it will be local path)
+        path:
         """
 
         sheet_names = pd.ExcelFile(path).sheet_names[1:]
@@ -205,8 +203,8 @@ class NowcastingEco:
     def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
         
         """
-        TO DO:
-        - Computation of the correlation between indicator and the tone curves => DONE
+        path: 
+        indicator:
         """
         # Filtering tone data according to selected filter
         df2 = self._theme_filtering()
@@ -305,6 +303,8 @@ class NowcastingEco:
 
     def compute_tone_time_series(self,dataframe,path):
         """
+        dataframe:
+        path:
         """
         tone_time_series = []
         # Load the indicator to get its frequency and adapt the frequency of the tone time series
