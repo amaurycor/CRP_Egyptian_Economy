@@ -13,6 +13,8 @@ class NowcastingEco:
     It allows to clean and preprocess the "news" data provided by QuantCube
     """
     def __init__(self,df):
+        """Initializes NowcastingEco with a pandas DataFrame."""
+
         self.country_filter = []
         self.theme_filter = []
         self.df = df
@@ -22,6 +24,8 @@ class NowcastingEco:
     ### Cleaning part
     #################
     def set_country_filter(self):
+        """Sets the country filter based on user input."""
+
         option = input("Choose a theme filter option (Egypt, UAE, or KSA): ")
         if option == 'Egypt':
             self.country = 'Egypt'
@@ -37,6 +41,8 @@ class NowcastingEco:
             self.set_country_filter()
 
     def headlines_cleaning(self, s_):
+        """Cleans and preprocesses the headlines in the news data."""
+
         s_ = str(s_)
         modified_str = [elem.split(',')[0] for elem in s_.split(';')] # delete the number after the coma
 
@@ -55,6 +61,8 @@ class NowcastingEco:
         return(merged_list) 
     
     def title_url(self, url):
+        """Extracts the title from a URL."""
+
         parsed_url = urlparse(url)
         path_segments = parsed_url.path.split('/')
         desired_string = [elem.split('-') for elem in path_segments]
@@ -62,6 +70,8 @@ class NowcastingEco:
         return (merged_list)
 
     def _country_filtering(self,s_): # optimized
+        """Filters the country based on the established country filter."""
+
         s_ = str(s_)
         modified_str = [elem.split('#')[1] for elem in s_.split(';')]
         final_str = [elem.split(', ')[-1] for elem in modified_str]
@@ -70,11 +80,15 @@ class NowcastingEco:
         return filtered_words if ratio >= 0.3 else 0
         
     def convert_into_list(self,string):
+        """Converts a string into a list."""
+
         list_ = list(string.split(","))
         list_ = [eval(i) for i in list_] # to get a float list
         return list_
         
     def extract_title(self,xml_string):
+        """Extracts the title from an xml string."""
+
         try:
             title = re.findall('<PAGE_TITLE>(.*?)</PAGE_TITLE>', xml_string)[0]
         except:
@@ -82,11 +96,15 @@ class NowcastingEco:
         return title
         
     def xml_cleaning(self, sentence):
+        """Cleans and preprocesses an xml string."""
+
         sentence = str(sentence)
         words = [elem.upper() for elem in sentence.split(' ')]
         return words
     
     def adjust_headline(self,row):
+        """Adjusts the headline of a news article."""
+
         if row['cleaned_xml'] and row['cleaned_xml'] != ['NA']:
             return row['cleaned_xml']
         elif row['cleaned_url'] and row['cleaned_url'] != ['NA']:
@@ -95,6 +113,7 @@ class NowcastingEco:
             return []
 
     def clean_data(self):
+        """Cleans and preprocesses the news data."""
 
         self.set_country_filter()
         
@@ -141,7 +160,10 @@ class NowcastingEco:
     def _theme_filtering(self):   
 
         """
-        
+        Filters the data based on a specified theme.
+
+        Returns:
+            pandas DataFrame: The filtered data containing only data related to the corresponding theme.
         """
 
         df = self.df # to make it iterable
@@ -164,7 +186,13 @@ class NowcastingEco:
     def read_country_data(self,path):
         
         """
-        path:
+        Reads and preprocesses country-specific data.
+
+        Args:
+            path (str): The path of indicators data file.
+
+        Returns:
+            tuple: Contains the processed data, indicator name, and frequency of this indicator.
         """
 
         sheet_names = pd.ExcelFile(path).sheet_names[1:]
@@ -203,9 +231,20 @@ class NowcastingEco:
     def tone_analysis(self,path,indicator=None): # The idea is to visualize the reference indicator over the 'tone', add in the future CPI etc.
         
         """
-        path: 
-        indicator:
+        Analyses and visualizes the tone of news articles.
+
+        Args:
+            path (str): The path of the indicators data file.
+            indicator (boolean): True or False to integrate or not a indicator in the analysis
+
+        Returns:
+            Two plots:
+            - first plot is the mean tone time series 
+            - second plot is the ratio fo positive toned article
+            - third plot is boxplots to see distribution of mean tone for each year
+            Opt: Correlation between tone time series and the indicator
         """
+
         # Filtering tone data according to selected filter
         df2 = self._theme_filtering()
 
@@ -303,9 +342,16 @@ class NowcastingEco:
 
     def compute_tone_time_series(self,dataframe,path):
         """
-        dataframe:
-        path:
+        Computes the time series of tone for news articles and extract indicator time series
+
+        Args:
+            dataframe (pd.DataFrame): The dataframe containing news data, to extract tone
+            path (str): The path of the indicators data file.
+
+        Returns:
+            tuple: Contains the tone time series and indicator time series.
         """
+
         tone_time_series = []
         # Load the indicator to get its frequency and adapt the frequency of the tone time series
         ind, _, freq = self.read_country_data(path)
